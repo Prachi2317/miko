@@ -1,0 +1,57 @@
+import java.util.*;
+
+public class AssemblyInterpreter {
+    private static final String REG1 = "REG1";
+    private static final String REG2 = "REG2";
+
+    private static final Map<String, Integer> registers = new HashMap<>();
+    static {
+        registers.put(REG1, 0);
+        registers.put(REG2, 0);
+    }
+
+    public static void main(String[] args) {
+        // Sample program
+        List<String> program = Arrays.asList(
+            "MV REG1,#2000",
+            "MV REG2,#4000",
+            "ADD REG1,REG2",
+            "ADD REG1,600",
+            "SHOW REG1"
+        );
+
+        // Execute program
+        for (String instruction : program) {
+            execute(instruction);
+        }
+
+        // Show register values
+        System.out.println("Register values:");
+        for (Map.Entry<String, Integer> entry : registers.entrySet()) {
+            System.out.println(entry.getKey() + " = " + entry.getValue());
+        }
+    }
+
+    private static void execute(String instruction) {
+        String[] tokens = instruction.split(" ");
+        if (tokens[0].equals("MV")) {
+            String reg = tokens[1];
+            int value = Integer.parseInt(tokens[2].substring(1));
+            registers.put(reg, value);
+        } else if (tokens[0].equals("ADD")) {
+            String reg1 = tokens[1];
+            String reg2OrValue = tokens[2];
+            int valueToAdd;
+            if (reg2OrValue.startsWith("#")) {
+                valueToAdd = Integer.parseInt(reg2OrValue.substring(1));
+            } else {
+                valueToAdd = registers.get(reg2OrValue);
+            }
+            int currentValue = registers.get(reg1);
+            registers.put(reg1, currentValue + valueToAdd);
+        } else if (tokens[0].equals("SHOW")) {
+            String reg = tokens[1];
+            System.out.println(reg + " = " + registers.get(reg));
+        }
+    }
+}
